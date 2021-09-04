@@ -62,15 +62,19 @@ impl __LibCWriter {
     }
 }
 
+extern "C" {
+    fn write(fd: i32, buf: *const core::ffi::c_void, count: usize) -> usize;
+}
+
 #[cfg(not(windows))]
 #[doc(hidden)]
 #[inline]
 pub fn __libc_println(handle: i32, msg: &str) -> core::fmt::Result {
     unsafe {
-        libc::write(
+        write(
             handle,
             msg.as_ptr() as *const core::ffi::c_void,
-            msg.len() as libc::size_t,
+            msg.len() as usize,
         );
         Ok(())
     }
@@ -81,7 +85,7 @@ pub fn __libc_println(handle: i32, msg: &str) -> core::fmt::Result {
 #[inline]
 pub fn __libc_println(handle: i32, msg: &str) -> core::fmt::Result {
     unsafe {
-        libc::write(
+        write(
             handle,
             msg.as_ptr() as *const core::ffi::c_void,
             msg.len() as u32,
